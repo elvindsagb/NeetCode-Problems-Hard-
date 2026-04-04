@@ -1,0 +1,33 @@
+Word Break II
+
+-------------------------------------------------------------------------------------
+
+def wordBreak(s, wordDict):
+    word_set = set(wordDict)
+    memo = {}
+
+    def backtrack(start):
+        if start in memo:
+            return memo[start]
+
+        if start == len(s):
+            return [""]
+
+        result = []
+        for end in range(start + 1, len(s) + 1):
+            word = s[start:end]
+            if word in word_set:
+                for sub in backtrack(end):
+                    result.append(word + (" " + sub if sub else ""))
+
+        memo[start] = result
+        return result
+
+    return backtrack(0)
+
+
+# ===== MAIN PROGRAM =====
+s = input("Enter string: ")
+wordDict = input("Enter dictionary: ").split()
+
+print("Sentences:", wordBreak(s, wordDict))
