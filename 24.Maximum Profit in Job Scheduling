@@ -1,0 +1,21 @@
+Concept: DP + Binary Search
+
+Problem:
+Given jobs with start, end, profit → maximize profit without overlap.
+
+----------------------------------------------------------------------------------------------------
+
+import bisect
+
+def jobScheduling(startTime, endTime, profit):
+    jobs = sorted(zip(startTime, endTime, profit), key=lambda x: x[1])
+    dp = [(0, 0)]  # (end_time, max_profit)
+
+    for s, e, p in jobs:
+        i = bisect.bisect_right(dp, (s, float('inf'))) - 1
+        curr_profit = dp[i][1] + p
+
+        if curr_profit > dp[-1][1]:
+            dp.append((e, curr_profit))
+
+    return dp[-1][1]
