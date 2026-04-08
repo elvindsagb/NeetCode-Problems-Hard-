@@ -1,0 +1,36 @@
+Concept: Tarjan’s Algorithm (DFS + Low Link Values)
+
+Problem:
+Find all critical edges in a network.
+
+---------------------------------------------------------------------------------------------------------
+
+def criticalConnections(n, connections):
+    graph = [[] for _ in range(n)]
+    for u, v in connections:
+        graph[u].append(v)
+        graph[v].append(u)
+
+    ids = [-1] * n
+    low = [0] * n
+    res = []
+    time = 0
+
+    def dfs(at, parent):
+        nonlocal time
+        ids[at] = low[at] = time
+        time += 1
+
+        for to in graph[at]:
+            if to == parent:
+                continue
+            if ids[to] == -1:
+                dfs(to, at)
+                low[at] = min(low[at], low[to])
+                if ids[at] < low[to]:
+                    res.append([at, to])
+            else:
+                low[at] = min(low[at], ids[to])
+
+    dfs(0, -1)
+    return res
