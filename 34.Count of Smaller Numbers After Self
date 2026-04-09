@@ -1,0 +1,35 @@
+Concept: Merge Sort + Counting Inversions
+
+Problem:
+For each element, count how many smaller elements are to its right.
+
+
+-----------------------------------------------------------------------------------------------------
+
+def countSmaller(nums):
+    res = [0]*len(nums)
+    enum = list(enumerate(nums))
+
+    def merge_sort(arr):
+        mid = len(arr)//2
+        if mid:
+            left = merge_sort(arr[:mid])
+            right = merge_sort(arr[mid:])
+            m, n = len(left), len(right)
+            i = j = 0
+            merged = []
+
+            while i < m or j < n:
+                if j == n or (i < m and left[i][1] <= right[j][1]):
+                    res[left[i][0]] += j
+                    merged.append(left[i])
+                    i += 1
+                else:
+                    merged.append(right[j])
+                    j += 1
+
+            return merged
+        return arr
+
+    merge_sort(enum)
+    return res
