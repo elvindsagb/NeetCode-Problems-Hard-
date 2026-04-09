@@ -1,0 +1,25 @@
+Concept: Graph + Hierholzer’s Algorithm (Eulerian Path)
+
+Problem:
+Given flight tickets, reconstruct itinerary in lexical order.
+
+---------------------------------------------------------------------------------------------------------------
+
+from collections import defaultdict
+
+def findItinerary(tickets):
+    graph = defaultdict(list)
+
+    for src, dst in sorted(tickets, reverse=True):
+        graph[src].append(dst)
+
+    res = []
+
+    def dfs(node):
+        while graph[node]:
+            dfs(graph[node].pop())
+        res.append(node)
+
+    dfs("JFK")
+    return res[::-1]
+    
