@@ -1,0 +1,39 @@
+Concept: Bucket Sort (Pigeonhole Principle)
+
+Problem:
+Find maximum difference between successive elements in sorted form (linear time).
+
+------------------------------------------------------------------------------------------------------------
+
+def maximumGap(nums):
+    if len(nums) < 2:
+        return 0
+
+    mn, mx = min(nums), max(nums)
+    if mn == mx:
+        return 0
+
+    n = len(nums)
+    bucket_size = max(1, (mx - mn) // (n - 1))
+    bucket_count = (mx - mn) // bucket_size + 1
+
+    buckets = [[None, None] for _ in range(bucket_count)]
+
+    for num in nums:
+        idx = (num - mn) // bucket_size
+        if buckets[idx][0] is None:
+            buckets[idx] = [num, num]
+        else:
+            buckets[idx][0] = min(buckets[idx][0], num)
+            buckets[idx][1] = max(buckets[idx][1], num)
+
+    prev = mn
+    max_gap = 0
+
+    for b in buckets:
+        if b[0] is None:
+            continue
+        max_gap = max(max_gap, b[0] - prev)
+        prev = b[1]
+
+    return max_gap
