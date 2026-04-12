@@ -1,0 +1,43 @@
+Concept: Binary Search on Value Space
+
+Problem:
+Matrix rows & columns are sorted. Find the kth smallest element.
+
+--------------------------------------------------------------------------------------------------------
+
+
+def kthSmallest(matrix, k):
+    n = len(matrix)
+
+    def countLessEqual(x):
+        count = 0
+        col = n - 1
+        for row in range(n):
+            while col >= 0 and matrix[row][col] > x:
+                col -= 1
+            count += (col + 1)
+        return count
+
+    left, right = matrix[0][0], matrix[-1][-1]
+
+    while left < right:
+        mid = (left + right) // 2
+        if countLessEqual(mid) < k:
+            left = mid + 1
+        else:
+            right = mid
+
+    return left
+
+
+
+
+
+
+
+
+
+
+
+
+
