@@ -1,0 +1,32 @@
+Concept: DP + Memoization + Circular Indexing
+
+Problem:
+Rotate a ring to spell a key with minimum steps.
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+from collections import defaultdict
+from functools import lru_cache
+
+def findRotateSteps(ring, key):
+    pos = defaultdict(list)
+    for i, c in enumerate(ring):
+        pos[c].append(i)
+
+    n = len(ring)
+
+    @lru_cache(None)
+    def dfs(i, j):
+        if j == len(key):
+            return 0
+
+        res = float('inf')
+        for k in pos[key[j]]:
+            diff = abs(i - k)
+            step = min(diff, n - diff)
+            res = min(res, step + 1 + dfs(k, j + 1))
+        return res
+
+    return dfs(0, 0)
