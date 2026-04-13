@@ -1,0 +1,43 @@
+Concept: Stack + Parsing + HashMap
+
+Problem:
+Parse a chemical formula and return atom counts.
+
+-----------------------------------------------------------------------------------------------
+
+from collections import Counter
+
+def countOfAtoms(formula):
+    stack = [Counter()]
+    i = 0
+    n = len(formula)
+
+    while i < n:
+        if formula[i] == '(':
+            stack.append(Counter())
+            i += 1
+        elif formula[i] == ')':
+            top = stack.pop()
+            i += 1
+            i_start = i
+            while i < n and formula[i].isdigit():
+                i += 1
+            mult = int(formula[i_start:i] or 1)
+            for k in top:
+                stack[-1][k] += top[k] * mult
+        else:
+            i_start = i
+            i += 1
+            while i < n and formula[i].islower():
+                i += 1
+            name = formula[i_start:i]
+
+            i_start = i
+            while i < n and formula[i].isdigit():
+                i += 1
+            count = int(formula[i_start:i] or 1)
+
+            stack[-1][name] += count
+
+    res = stack[-1]
+    return ''.join(k + (str(res[k]) if res[k] > 1 else '') for k in sorted(res))
