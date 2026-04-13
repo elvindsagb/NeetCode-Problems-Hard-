@@ -1,0 +1,49 @@
+Concept: Backtracking + State Pruning
+
+Problem:
+Insert balls to clear the board with minimum steps.
+
+--------------------------------------------------------------------------------------------------------------------
+
+from functools import lru_cache
+from collections import Counter
+
+def findMinStep(board, hand):
+    hand = Counter(hand)
+
+    def shrink(s):
+        i = 0
+        while i < len(s):
+            j = i
+            while j < len(s) and s[j] == s[i]:
+                j += 1
+            if j - i >= 3:
+                return shrink(s[:i] + s[j:])
+            i = j
+        return s
+
+    @lru_cache(None)
+    def dfs(s, hand_key):
+        if not s:
+            return 0
+        hand_count = Counter(dict(hand_key))
+        res = float('inf')
+
+        for i in range(len(s)):
+            j = i
+            while j < len(s) and s[j] == s[i]:
+                j += 1
+
+            need = 3 - (j - i)
+            if hand_count[s[i]] >= need:
+                hand_count[s[i]] -= need
+                new_s = shrink(s[:i] + s[j:])
+                next_hand = tuple(hand_count.items())
+                sub = dfs(new_s, next_hand)
+                if sub != -1:
+                    res = min(res, sub + need)
+                hand_count[s[i]] += need
+
+        return res if res != float('inf') else -1
+
+    return dfs(board, tuple(hand.items()))
