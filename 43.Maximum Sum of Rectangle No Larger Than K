@@ -1,0 +1,30 @@
+Concept: 2D Prefix Sum + Balanced BST (Kadane Variant)
+
+Problem:
+Find the maximum sum of a rectangle in a matrix such that it is ≤ k.
+
+
+-----------------------------------------------------------------------------------------------------------
+
+import bisect
+
+def maxSumSubmatrix(matrix, k):
+    rows, cols = len(matrix), len(matrix[0])
+    res = float('-inf')
+
+    for left in range(cols):
+        row_sum = [0] * rows
+        for right in range(left, cols):
+            for r in range(rows):
+                row_sum[r] += matrix[r][right]
+
+            prefix = [0]
+            curr = 0
+            for s in row_sum:
+                curr += s
+                idx = bisect.bisect_left(prefix, curr - k)
+                if idx < len(prefix):
+                    res = max(res, curr - prefix[idx])
+                bisect.insort(prefix, curr)
+
+    return resa
