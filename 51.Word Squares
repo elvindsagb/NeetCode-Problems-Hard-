@@ -1,0 +1,34 @@
+Concept: Trie + Backtracking
+
+Problem:
+Find all word squares from given words.
+
+-------------------------------------------------------------------------
+
+from collections import defaultdict
+
+def wordSquares(words):
+    prefix_map = defaultdict(list)
+
+    for word in words:
+        for i in range(len(word)):
+            prefix_map[word[:i]].append(word)
+
+    res = []
+
+    def backtrack(square):
+        if len(square) == len(square[0]):
+            res.append(square[:])
+            return
+
+        prefix = ''.join(row[len(square)] for row in square)
+
+        for candidate in prefix_map[prefix]:
+            square.append(candidate)
+            backtrack(square)
+            square.pop()
+
+    for word in words:
+        backtrack([word])
+
+    return res
