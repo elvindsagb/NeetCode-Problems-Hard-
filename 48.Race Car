@@ -1,0 +1,34 @@
+oncept: BFS + State Space Search
+
+Problem:
+A car starts at position 0 with speed 1. Commands:
+
+A → position += speed, speed *= 2
+R → reverse direction
+
+Find minimum steps to reach target.
+
+-------------------------------------------------------------------------------------------------------------
+
+from collections import deque
+
+def racecar(target):
+    queue = deque([(0, 1, 0)])  # position, speed, steps
+    visited = set()
+
+    while queue:
+        pos, speed, steps = queue.popleft()
+
+        if pos == target:
+            return steps
+
+        if (pos, speed) in visited:
+            continue
+        visited.add((pos, speed))
+
+        # accelerate
+        queue.append((pos + speed, speed * 2, steps + 1))
+
+        # reverse
+        if (pos + speed > target and speed > 0) or (pos + speed < target and speed < 0):
+            queue.append((pos, -1 if speed > 0 else 1, steps + 1))
