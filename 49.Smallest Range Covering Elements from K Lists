@@ -1,0 +1,33 @@
+Concept: Heap + Sliding Window on Sorted Lists
+
+Problem:
+Find smallest range that includes at least one number from each list.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+import heapq
+
+def smallestRange(nums):
+    heap = []
+    max_val = float('-inf')
+
+    for i, lst in enumerate(nums):
+        heapq.heappush(heap, (lst[0], i, 0))
+        max_val = max(max_val, lst[0])
+
+    res = [-10**5, 10**5]
+
+    while True:
+        min_val, i, j = heapq.heappop(heap)
+
+        if max_val - min_val < res[1] - res[0]:
+            res = [min_val, max_val]
+
+        if j + 1 == len(nums[i]):
+            break
+
+        next_val = nums[i][j+1]
+        heapq.heappush(heap, (next_val, i, j+1))
+        max_val = max(max_val, next_val)
+
+    return res
