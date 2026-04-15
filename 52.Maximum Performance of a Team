@@ -1,0 +1,27 @@
+Concept: Greedy + Heap + Sorting
+
+Problem:
+Select at most k engineers to maximize performance = sum(speed) * min(efficiency)
+
+---------------------------------------------------------------------------------------------------------------
+
+import heapq
+
+def maxPerformance(n, speed, efficiency, k):
+    MOD = 10**9 + 7
+    engineers = sorted(zip(efficiency, speed), reverse=True)
+
+    heap = []
+    speed_sum = 0
+    res = 0
+
+    for e, s in engineers:
+        heapq.heappush(heap, s)
+        speed_sum += s
+
+        if len(heap) > k:
+            speed_sum -= heapq.heappop(heap)
+
+        res = max(res, speed_sum * e)
+
+    return res % MOD
