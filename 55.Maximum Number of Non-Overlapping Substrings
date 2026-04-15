@@ -1,0 +1,44 @@
+Concept: Greedy + Interval Expansion
+
+Problem:
+Find maximum number of non-overlapping substrings such that each substring contains all occurrences of its characters.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+def maxNumOfSubstrings(s):
+    first = {}
+    last = {}
+
+    for i, c in enumerate(s):
+        if c not in first:
+            first[c] = i
+        last[c] = i
+
+    def expand(i):
+        start = i
+        end = last[s[i]]
+        j = start
+        while j <= end:
+            if first[s[j]] < start:
+                return -1
+            end = max(end, last[s[j]])
+            j += 1
+        return end
+
+    intervals = []
+    for i in range(len(s)):
+        if i == first[s[i]]:
+            end = expand(i)
+            if end != -1:
+                intervals.append((i, end))
+
+    intervals.sort(key=lambda x: x[1])
+
+    res = []
+    prev_end = -1
+    for start, end in intervals:
+        if start > prev_end:
+            res.append(s[start:end+1])
+            prev_end = end
+
+    return res
