@@ -1,0 +1,24 @@
+Concept: Combinatorics + DFS
+
+Problem:
+Count ways to reorder array so BST remains same.
+
+--------------------------------------------------------------------------------------------
+
+from math import comb
+
+def numOfWays(nums):
+    MOD = 10**9 + 7
+
+    def dfs(arr):
+        if len(arr) <= 2:
+            return 1
+
+        root = arr[0]
+        left = [x for x in arr if x < root]
+        right = [x for x in arr if x > root]
+
+        return (comb(len(left)+len(right), len(left)) *
+                dfs(left) * dfs(right)) % MOD
+
+    return (dfs(nums) - 1) % MOD
