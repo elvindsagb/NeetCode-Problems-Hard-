@@ -1,0 +1,46 @@
+Concept: BFS + State (player + box position)
+
+Problem:
+Push a box to target with minimum pushes.
+
+---------------------------------------------------------------------------------------------------------
+
+from collections import deque
+
+def minPushBox(grid):
+    rows, cols = len(grid), len(grid[0])
+
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 'S':
+                player = (i, j)
+            elif grid[i][j] == 'B':
+                box = (i, j)
+            elif grid[i][j] == 'T':
+                target = (i, j)
+
+    def valid(r, c):
+        return 0 <= r < rows and 0 <= c < cols and grid[r][c] != '#'
+
+    queue = deque([(box, player, 0)])
+    visited = set([(box, player)])
+
+    directions = [(1,0),(-1,0),(0,1),(0,-1)]
+
+    while queue:
+        box, player, pushes = queue.popleft()
+        if box == target:
+            return pushes
+
+        for dr, dc in directions:
+            new_box = (box[0]+dr, box[1]+dc)
+            player_pos = (box[0]-dr, box[1]-dc)
+
+            if not valid(*new_box) or not valid(*player_pos):
+                continue
+
+            if (new_box, box) not in visited:
+                visited.add((new_box, box))
+                queue.append((new_box, box, pushes+1))
+
+    return -1
