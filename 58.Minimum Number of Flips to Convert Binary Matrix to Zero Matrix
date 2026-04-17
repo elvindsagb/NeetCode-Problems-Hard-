@@ -1,0 +1,45 @@
+Concept: BFS + Bitmask + Matrix State Encoding
+
+Problem:
+Flip cells (and neighbors) to convert matrix to all zeros.
+
+--------------------------------------------------------------------------------------------
+
+from collections import deque
+
+def minFlips(mat):
+    m, n = len(mat), len(mat[0])
+
+    def encode(mat):
+        state = 0
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j]:
+                    state |= (1 << (i*n + j))
+        return state
+
+    start = encode(mat)
+    queue = deque([(start, 0)])
+    visited = {start}
+
+    directions = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
+
+    while queue:
+        state, steps = queue.popleft()
+
+        if state == 0:
+            return steps
+
+        for i in range(m):
+            for j in range(n):
+                new_state = state
+                for dr, dc in directions:
+                    r, c = i+dr, j+dc
+                    if 0 <= r < m and 0 <= c < n:
+                        new_state ^= (1 << (r*n + c))
+
+                if new_state not in visited:
+                    visited.add(new_state)
+                    queue.append((new_state, steps+1))
+
+    return -1
