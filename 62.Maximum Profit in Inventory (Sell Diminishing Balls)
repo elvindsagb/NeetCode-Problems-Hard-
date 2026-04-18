@@ -1,0 +1,32 @@
+Concept: Greedy + Math Optimization
+
+Problem:
+Sell balls with decreasing value to maximize profit.
+
+-------------------------------------------------------------------------------------------------------
+
+def maxProfit(inventory, orders):
+    inventory.sort(reverse=True)
+    inventory.append(0)
+    mod = 10**9 + 7
+    res = 0
+    i = 0
+
+    while orders > 0:
+        count = i + 1
+        diff = inventory[i] - inventory[i+1]
+
+        if count * diff <= orders:
+            res += count * (inventory[i] + inventory[i+1] + 1) * diff // 2
+            orders -= count * diff
+        else:
+            full = orders // count
+            rem = orders % count
+            res += count * (inventory[i] + inventory[i] - full + 1) * full // 2
+            res += rem * (inventory[i] - full)
+            orders = 0
+
+        res %= mod
+        i += 1
+
+    return res
