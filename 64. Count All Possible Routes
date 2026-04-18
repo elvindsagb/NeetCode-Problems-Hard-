@@ -1,0 +1,27 @@
+Concept: DP + Memoization + Graph traversal
+
+Problem:
+Count all routes from start to finish with limited fuel.
+
+-------------------------------------------------------------------------------------------------
+
+from functools import lru_cache
+
+def countRoutes(locations, start, finish, fuel):
+    mod = 10**9 + 7
+
+    @lru_cache(None)
+    def dfs(pos, fuel_left):
+        if fuel_left < 0:
+            return 0
+
+        res = 1 if pos == finish else 0
+
+        for i in range(len(locations)):
+            if i != pos:
+                cost = abs(locations[pos] - locations[i])
+                res += dfs(i, fuel_left - cost)
+
+        return res % mod
+
+    return dfs(start, fuel)
