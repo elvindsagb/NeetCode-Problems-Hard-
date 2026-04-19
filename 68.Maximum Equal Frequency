@@ -1,0 +1,30 @@
+Concept: Frequency Map + Pattern Observation
+
+Problem:
+Find longest prefix where removing one element makes all frequencies equal.
+
+--------------------------------------------------------------------------------------------------
+
+from collections import defaultdict
+
+def maxEqualFreq(nums):
+    freq = defaultdict(int)
+    count = defaultdict(int)
+    maxf = 0
+    res = 0
+
+    for i, num in enumerate(nums):
+        if freq[num]:
+            count[freq[num]] -= 1
+
+        freq[num] += 1
+        f = freq[num]
+        count[f] += 1
+        maxf = max(maxf, f)
+
+        if maxf == 1 or \
+           maxf * count[maxf] + 1 == i + 1 or \
+           (maxf - 1) * (count[maxf - 1] + 1) == i + 1:
+            res = i + 1
+
+    return res
