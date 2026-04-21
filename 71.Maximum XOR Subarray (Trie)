@@ -1,0 +1,47 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, num):
+        node = self.root
+        for i in range(31, -1, -1):
+            bit = (num >> i) & 1
+            if bit not in node.children:
+                node.children[bit] = TrieNode()
+            node = node.children[bit]
+
+    def max_xor(self, num):
+        node = self.root
+        max_xor = 0
+        for i in range(31, -1, -1):
+            bit = (num >> i) & 1
+            toggled = 1 - bit
+            if toggled in node.children:
+                max_xor |= (1 << i)
+                node = node.children[toggled]
+            else:
+                node = node.children.get(bit, node)
+        return max_xor
+
+
+def max_xor_subarray(arr):
+    trie = Trie()
+    trie.insert(0)
+
+    result = 0
+    prefix_xor = 0
+
+    for num in arr:
+        prefix_xor ^= num
+        result = max(result, trie.max_xor(prefix_xor))
+        trie.insert(prefix_xor)
+
+    return result
+
+
+# Example
+print(max_xor_subarray([3, 10, 5, 25, 2, 8]))
