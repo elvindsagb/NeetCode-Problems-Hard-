@@ -1,0 +1,57 @@
+def query_engine(data, query):
+    query = query.lower()
+
+    # SELECT
+    select_part = query.split("from")[0].replace("select", "").strip().split(",")
+
+    # WHERE
+    where_part = None
+    if "where" in query:
+        where_part = query.split("where")[1].split("order by")[0].strip()
+
+    # ORDER BY
+    order_key = None
+    reverse = False
+    if "order by" in query:
+        order_part = query.split("order by")[1].split("limit")[0].strip()
+        parts = order_part.split()
+        order_key = parts[0]
+        reverse = len(parts) > 1 and parts[1] == "desc"
+
+    # LIMIT
+    limit = None
+    if "limit" in query:
+        limit = int(query.split("limit")[1].strip())
+
+    # FILTER
+    if where_part:
+        key, op, value = where_part.split()
+        value = int(value)
+        if op == ">":
+            data = [d for d in data if d[key] > value]
+
+    # SORT
+    if order_key:
+        data = sorted(data, key=lambda x: x[order_key], reverse=reverse)
+
+    # LIMIT
+    if limit:
+        data = data[:limit]
+
+    # SELECT
+    result = [{k: d[k] for k in select_part} for d in data]
+
+    return result
+
+
+# Example
+data = [
+    {"name": "A", "age": 30},
+    {"name": "B", "age": 20},
+    {"name": "C", "age": 40},
+    {"name": "D", "age": 25}
+]
+
+query = "SELECT name,age FROM data WHERE age > 25 ORDER BY age DESC LIMIT 2"
+
+print(query_engine(data, query))
