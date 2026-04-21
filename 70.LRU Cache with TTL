@@ -1,0 +1,68 @@
+import time
+
+class Node:
+    def __init__(self, key, value, expiry):
+        self.key = key
+        self.value = value
+        self.expiry = expiry
+        self.prev = None
+        self.next = None
+
+class LRUCacheTTL:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = {}
+
+        self.head = Node(0, 0, 0)
+        self.tail = Node(0, 0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        prev, nxt = node.prev, node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def _add(self, node):
+        nxt = self.head.next
+        self.head.next = node
+        node.prev = self.head
+        node.next = nxt
+        nxt.prev = node
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+
+        node = self.cache[key]
+
+        if node.expiry < time.time():
+            self._remove(node)
+            del self.cache[key]
+            return -1
+
+        self._remove(node)
+        self._add(node)
+        return node.value
+
+    def put(self, key, value, ttl):
+        if key in self.cache:
+            self._remove(self.cache[key])
+
+        if len(self.cache) >= self.capacity:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+
+        expiry = time.time() + ttl
+        node = Node(key, value, expiry)
+        self.cache[key] = node
+        self._add(node)
+
+
+# Example
+cache = LRUCacheTTL(2)
+cache.put(1, 10, 5)
+print(cache.get(1))
+time.sleep(6)
+print(cache.get(1))  # expired
