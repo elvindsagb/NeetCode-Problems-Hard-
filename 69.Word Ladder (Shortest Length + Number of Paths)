@@ -1,0 +1,46 @@
+from collections import defaultdict, deque
+
+def word_ladder_paths(beginWord, endWord, wordList):
+    wordSet = set(wordList)
+    if endWord not in wordSet:
+        return 0, 0
+
+    graph = defaultdict(list)
+    level = {beginWord: 0}
+    queue = deque([beginWord])
+    found = False
+    min_level = float('inf')
+
+    while queue:
+        word = queue.popleft()
+        current_level = level[word]
+
+        if current_level > min_level:
+            break
+
+        for i in range(len(word)):
+            for c in 'abcdefghijklmnopqrstuvwxyz':
+                new_word = word[:i] + c + word[i+1:]
+
+                if new_word in wordSet:
+                    if new_word not in level:
+                        level[new_word] = current_level + 1
+                        queue.append(new_word)
+
+                    if level[new_word] == current_level + 1:
+                        graph[word].append(new_word)
+
+                    if new_word == endWord:
+                        found = True
+                        min_level = current_level + 1
+
+    def count_paths(word):
+        if word == endWord:
+            return 1
+        return sum(count_paths(next_word) for next_word in graph[word])
+
+    return min_level + 1 if found else 0, count_paths(beginWord)
+
+
+# Example
+print(word_ladder_paths("hit", "cog", ["hot","dot","dog","lot","log","cog"]))
