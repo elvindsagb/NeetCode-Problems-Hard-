@@ -1,0 +1,39 @@
+Problem: Edges are either red or blue. Find shortest path where colors must alternate.
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+from collections import deque, defaultdict
+
+def shortestAlternatingPaths(n, redEdges, blueEdges):
+    graph = defaultdict(list)
+
+    for u, v in redEdges:
+        graph[u].append((v, 'R'))
+    for u, v in blueEdges:
+        graph[u].append((v, 'B'))
+
+    dist = [[float('inf')] * 2 for _ in range(n)]  # 0=R,1=B
+    dist[0][0] = dist[0][1] = 0
+
+    queue = deque([(0, 'R'), (0, 'B')])
+
+    while queue:
+        node, color = queue.popleft()
+        color_idx = 0 if color == 'R' else 1
+
+        for nei, next_color in graph[node]:
+            next_idx = 0 if next_color == 'R' else 1
+
+            if color != next_color and dist[nei][next_idx] == float('inf'):
+                dist[nei][next_idx] = dist[node][color_idx] + 1
+                queue.append((nei, next_color))
+
+    result = []
+    for r, b in dist:
+        res = min(r, b)
+        result.append(res if res != float('inf') else -1)
+
+    return result
+
+
+print(shortestAlternatingPaths(3, [[0,1],[1,2]], []))
