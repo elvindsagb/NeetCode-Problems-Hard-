@@ -1,0 +1,25 @@
+Problem: Given flight tickets, reconstruct path using all tickets once (lexicographically smallest).
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+from collections import defaultdict
+
+def findItinerary(tickets):
+    graph = defaultdict(list)
+
+    for src, dst in sorted(tickets, reverse=True):
+        graph[src].append(dst)
+
+    result = []
+
+    def visit(airport):
+        while graph[airport]:
+            visit(graph[airport].pop())
+        result.append(airport)
+
+    visit("JFK")
+    return result[::-1]
+
+
+tickets = [["MUC","LHR"],["JFK","MUC"],["SFO","SJC"],["LHR","SFO"]]
+print(findItinerary(tickets))
