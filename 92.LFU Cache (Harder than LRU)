@@ -1,0 +1,79 @@
+Problem:
+Design a Least Frequently Used (LFU) cache with O(1) operations.
+
+Concepts: HashMap + Frequency Map + Doubly Linked Lists
+
+------------------------------------------------------------------------------------------------------------------------------
+
+from collections import defaultdict
+
+class Node:
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.freq = 1
+        self.prev = self.next = None
+
+class DLL:
+    def __init__(self):
+        self.head = self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def insert(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def is_empty(self):
+        return self.head.next == self.tail
+
+class LFUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.min_freq = 0
+        self.key_map = {}
+        self.freq_map = defaultdict(DLL)
+
+    def update(self, node):
+        freq = node.freq
+        self.freq_map[freq].remove(node)
+
+        if freq == self.min_freq and self.freq_map[freq].is_empty():
+            self.min_freq += 1
+
+        node.freq += 1
+        self.freq_map[node.freq].insert(node)
+
+    def get(self, key):
+        if key not in self.key_map:
+            return -1
+        node = self.key_map[key]
+        self.update(node)
+        return node.val
+
+    def put(self, key, value):
+        if self.cap == 0:
+            return
+
+        if key in self.key_map:
+            node = self.key_map[key]
+            node.val = value
+            self.update(node)
+            return
+
+        if len(self.key_map) == self.cap:
+            dll = self.freq_map[self.min_freq]
+            lru = dll.tail.prev
+            dll.remove(lru)
+            del self.key_map[lru.key]
+
+        node = Node(key, value)
+        self.key_map[key] = node
+        self.freq_map[1].insert(node)
+        self.min_freq = 1
