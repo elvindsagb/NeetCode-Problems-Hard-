@@ -1,0 +1,28 @@
+def splitArray(nums, k):
+    def can_split(max_sum):
+        current = 0
+        pieces = 1
+
+        for num in nums:
+            if current + num > max_sum:
+                pieces += 1
+                current = num
+                if pieces > k:
+                    return False
+            else:
+                current += num
+        return True
+
+    left, right = max(nums), sum(nums)
+
+    while left < right:
+        mid = (left + right) // 2
+        if can_split(mid):
+            right = mid
+        else:
+            left = mid + 1
+
+    return left
+
+
+print(splitArray([7,2,5,10,8], 2))
